@@ -7,7 +7,10 @@ cd benchamrk
 turnt bubblesort.bril
 ```
 
-## Write a program to analyze Bril programs: Count the number of add instructions
+## Write a program to analyze Bril programs
+`add_count.py`: Count the number of add instructions
+It is very easy to implement. Only need to load json IR and find the `add op`. Note that some `instr` doesn't have key `op`, so we need to check whether there is `op` in keys. 
+
 - Check the number of add instructions for these test cases. 
 ```
 cd analysis
