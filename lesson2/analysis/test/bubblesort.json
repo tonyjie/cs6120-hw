@@ -1,0 +1,625 @@
+{
+  "functions": [
+    {
+      "args": [
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "n1",
+          "type": "int"
+        },
+        {
+          "name": "n2",
+          "type": "int"
+        },
+        {
+          "name": "n3",
+          "type": "int"
+        },
+        {
+          "name": "n4",
+          "type": "int"
+        },
+        {
+          "name": "n5",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "dest": "one",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "dest": "i",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "args": [
+            "size"
+          ],
+          "dest": "array",
+          "op": "alloc",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc",
+            "n1"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc",
+            "n2"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc",
+            "n3"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc",
+            "n4"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc",
+            "n5"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "array"
+          ],
+          "op": "ret"
+        }
+      ],
+      "name": "pack",
+      "type": {
+        "ptr": "int"
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "array",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "name": "size",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "dest": "i",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "dest": "one",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "label": "loop"
+        },
+        {
+          "args": [
+            "i",
+            "size"
+          ],
+          "dest": "cond",
+          "op": "lt",
+          "type": "bool"
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "body",
+            "done"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "body"
+        },
+        {
+          "args": [
+            "array",
+            "i"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc"
+          ],
+          "dest": "val",
+          "op": "load",
+          "type": "int"
+        },
+        {
+          "args": [
+            "val"
+          ],
+          "op": "print"
+        },
+        {
+          "label": "loop_end"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "labels": [
+            "loop"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "done"
+        },
+        {
+          "op": "ret"
+        }
+      ],
+      "name": "print_array"
+    },
+    {
+      "args": [
+        {
+          "name": "array",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "name": "j",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "dest": "one",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "args": [
+            "j",
+            "one"
+          ],
+          "dest": "j_add_1",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "args": [
+            "array",
+            "j"
+          ],
+          "dest": "loc",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "array",
+            "j_add_1"
+          ],
+          "dest": "loc_next",
+          "op": "ptradd",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "args": [
+            "loc"
+          ],
+          "dest": "elem_a",
+          "op": "load",
+          "type": "int"
+        },
+        {
+          "args": [
+            "loc_next"
+          ],
+          "dest": "elem_b",
+          "op": "load",
+          "type": "int"
+        },
+        {
+          "args": [
+            "elem_a",
+            "elem_b"
+          ],
+          "dest": "cond",
+          "op": "gt",
+          "type": "bool"
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "swap",
+            "done"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "swap"
+        },
+        {
+          "args": [
+            "loc",
+            "elem_b"
+          ],
+          "op": "store"
+        },
+        {
+          "args": [
+            "loc_next",
+            "elem_a"
+          ],
+          "op": "store"
+        },
+        {
+          "label": "done"
+        },
+        {
+          "op": "ret"
+        }
+      ],
+      "name": "swap_cond"
+    },
+    {
+      "args": [
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "n1",
+          "type": "int"
+        },
+        {
+          "name": "n2",
+          "type": "int"
+        },
+        {
+          "name": "n3",
+          "type": "int"
+        },
+        {
+          "name": "n4",
+          "type": "int"
+        },
+        {
+          "name": "n5",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "args": [
+            "size",
+            "n1",
+            "n2",
+            "n3",
+            "n4",
+            "n5"
+          ],
+          "dest": "array",
+          "funcs": [
+            "pack"
+          ],
+          "op": "call",
+          "type": {
+            "ptr": "int"
+          }
+        },
+        {
+          "dest": "one",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "dest": "i",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "dest": "j",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "args": [
+            "size",
+            "one"
+          ],
+          "dest": "sizei",
+          "op": "sub",
+          "type": "int"
+        },
+        {
+          "label": "loopi"
+        },
+        {
+          "args": [
+            "i",
+            "sizei"
+          ],
+          "dest": "condi",
+          "op": "lt",
+          "type": "bool"
+        },
+        {
+          "args": [
+            "condi"
+          ],
+          "labels": [
+            "bodyi",
+            "donei"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "bodyi"
+        },
+        {
+          "args": [
+            "size",
+            "i"
+          ],
+          "dest": "sizej",
+          "op": "sub",
+          "type": "int"
+        },
+        {
+          "args": [
+            "sizej",
+            "one"
+          ],
+          "dest": "sizej",
+          "op": "sub",
+          "type": "int"
+        },
+        {
+          "label": "loopj"
+        },
+        {
+          "args": [
+            "j",
+            "sizej"
+          ],
+          "dest": "condj",
+          "op": "lt",
+          "type": "bool"
+        },
+        {
+          "args": [
+            "condj"
+          ],
+          "labels": [
+            "bodyj",
+            "donej"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "bodyj"
+        },
+        {
+          "args": [
+            "array",
+            "j"
+          ],
+          "funcs": [
+            "swap_cond"
+          ],
+          "op": "call"
+        },
+        {
+          "label": "loop_endj"
+        },
+        {
+          "args": [
+            "j",
+            "one"
+          ],
+          "dest": "j",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "labels": [
+            "loopj"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "donej"
+        },
+        {
+          "dest": "j",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "label": "loopi_end"
+        },
+        {
+          "args": [
+            "i",
+            "one"
+          ],
+          "dest": "i",
+          "op": "add",
+          "type": "int"
+        },
+        {
+          "labels": [
+            "loopi"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "donei"
+        },
+        {
+          "args": [
+            "array",
+            "size"
+          ],
+          "funcs": [
+            "print_array"
+          ],
+          "op": "call"
+        },
+        {
+          "args": [
+            "array"
+          ],
+          "op": "free"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}
