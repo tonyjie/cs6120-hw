@@ -1,4 +1,4 @@
-# ARGS: dkp
+# ARGS: dce+
 @main {
   a: int = const 100;
   a: int = const 42;
