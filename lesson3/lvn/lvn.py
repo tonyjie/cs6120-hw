@@ -2,7 +2,6 @@ import json
 import sys
 import copy
 from collections import namedtuple
-
 from utils import form_blocks, flatten
 
 # cloud = dict() # key: variable; value: #
@@ -15,10 +14,7 @@ from utils import form_blocks, flatten
 # var2num: a Dict with the key as variable (in program) and the value as *NUMBER*. 
 
 
-
-# TODO: change the var name, but need to change other names who reference it. 
-
-Value = namedtuple('Value', ['op', 'args', 'value'])
+Value = namedtuple('Value', ['op', 'args'])
 
 def fresh(seed, names):
     '''Generate a new name that is not in `names` starting with `seed`.
@@ -64,7 +60,6 @@ def find(table, val, prop, commute):
             num = val.args[0]
             return True, (num, None)
 
-
     found = False
 
     if val.op != 'const': # we don't search for CONST op. We just directly put the const value into the table. 
@@ -83,6 +78,65 @@ def find(table, val, prop, commute):
         return True, (num, var)
     else:
         return False, (None, None)
+
+FOLDABLE_OPS = {
+    'add': lambda a, b: a + b,
+    'mul': lambda a, b: a * b,
+    'sub': lambda a, b: a - b,
+    'div': lambda a, b: a // b,
+    'gt': lambda a, b: a > b,
+    'lt': lambda a, b: a < b,
+    'ge': lambda a, b: a >= b,
+    'le': lambda a, b: a <= b,
+    'ne': lambda a, b: a != b,
+    'eq': lambda a, b: a == b,
+    'or': lambda a, b: a or b,
+    'and': lambda a, b: a and b,
+    'not': lambda a: not a
+}
+
+def const_fold(value, num2const):
+    '''Compute the result as constant value if the args are constants. Transform the instruction into *const* inst. 
+    Add (num, value) key-value pair into num2const.  
+
+    Return: constant result if it is foldable. Otherwise return None. 
+    '''
+
+    # Special cases: 
+    # for Comparison op: gt, lt, ge, le, ne, eq. 
+    # If value.arg[0] == value.arg[1], (e.g. 'arg1' == 'arg1'), even it is not a constant arg, we should fold and give constant result. 
+    if value.op in ['gt', 'lt', 'ge', 'le', 'ne', 'eq']:
+        if value.args[0] == value.args[1]:
+            const_args = [0, 0] # give any two args with the same value
+            return FOLDABLE_OPS[value.op](*const_args)
+
+    # for Logic op: and, or
+    if value.op == 'and':
+        for arg in value.args:
+            const_arg = num2const.get(arg, None) # if arg is not in num2const Dict, const_arg = None
+            if const_arg == False:
+                return False
+
+    if value.op == 'or':
+        for arg in value.args:
+            const_arg = num2const.get(arg, None) # if arg is not in num2const Dict, const_arg = None
+            if const_arg == True:
+                return True
+
+    args_are_const = True
+    for arg in value.args:
+        if arg not in num2const:
+            args_are_const = False
+            break
+
+    if (args_are_const) and (value.op in FOLDABLE_OPS):
+        const_args = [num2const[arg] for arg in value.args]
+
+        return FOLDABLE_OPS[value.op](*const_args)
+    
+    else:
+        return None
+
 
 
 def change_overwritten_name(block):
@@ -136,39 +190,54 @@ def change_overwritten_name(block):
             last_write[dest] = instr_index
 
 def lvn(func, prop, commute, fold):
+    '''Local Value Numbering. 
+    '''
+    # deal with functions with args
+    func_args = func.get('args', [])
     blocks = list(form_blocks(func['instrs']))
     for block in blocks:
-        lvn_block(block, prop, commute, fold)
+        lvn_block(block, func_args, prop, commute, fold)
     func['instr'] = flatten(blocks)
 
 
-def lvn_block(block, prop, commute, fold):
+def lvn_block(block, func_args, prop, commute, fold):
+    '''Local Value Numbering for each blocks. 
+    '''
+    
     # a List that is indexed by the *NUMBER*. The value is Tuple = (*VALUE*, *Variable*). *VALUE* is a namedtuple, containing *op*, *args*, *value*
     table = list()
     # Key: current number index of every defined variable. Value: number in the Table. Different variables can have the same number in the Table. 
     var2num = dict()
-
     # Key: number in the Table. Value: const value (if the value of variable could be computed)
     num2const = dict()
 
     # loop once to change the names of overwritten variables
     change_overwritten_name(block)
 
+    # if func has args, put each arg into one row of table. Give each a number. var2num. table. 
+    for func_arg in func_args:
+        pseudo_op = 'func_arg'
+        pseudo_args = list()
+
+        num = len(table)
+
+        val = Value(pseudo_op, pseudo_args)
+        dest = func_arg['name']
+        table.append((val, dest))
+        
+        var2num[dest] = num
 
 
-    for instr_index, instr in enumerate(block):
+    for instr in block:
 
         if 'op' in instr: # if this is an operation
 
+            val_op = instr['op']
+            argsvar = instr.get('args', [])
+            argsnum = [var2num[argvar] for argvar in argsvar]
 
-            val_op = copy.deepcopy(instr['op'])
-            val_args = copy.deepcopy(instr.get('args', []))
-            val_value = copy.deepcopy(instr.get('value', None))
-
-            val = Value(val_op, val_args, val_value) # TODO: some op don't have args. Like `ret`, `const`
-
-            for i, arg in enumerate(val.args):
-                val.args[i] = var2num.get(arg, None) # TODO: is there the case that we can't find the args in var2num?
+            # generate Value object
+            val = Value(val_op, argsnum) # TODO: some op don't have args. Like `ret`, `const`
 
             # find the *num* and *var* in the table if exists, according to the *val*
             found, (num, var) = find(table, val, prop, commute)
@@ -176,7 +245,7 @@ def lvn_block(block, prop, commute, fold):
             if DEBUG:
                 print(f'found: {found}, num: {num}, var: {var}')
 
-            
+                    
             if found: # value is in the table
                 # current instr is 'id', returned *num* holds a constant value
 
@@ -198,6 +267,22 @@ def lvn_block(block, prop, commute, fold):
 
             else: # value not in table
                 num = len(table)
+
+                # Constant Folding: Compute the constant value if the *args* are all in num2constant. Compute based on the *op*
+                if fold:
+                    const_result = const_fold(val, num2const) # compute the constant value, and put it into num2const Dict
+                    # update instruction: transform inst to *const*
+                    if const_result != None:
+                        instr.update({
+                            'op': 'const',
+                            'value': const_result,
+                        })
+                        instr.pop('args', None)
+                    
+                    
+                    if DEBUG:
+                        print("Const Result: ", const_result)
+
 
                 if 'dest' in instr:
                     dest = instr['dest']
@@ -231,11 +316,6 @@ def lvn_block(block, prop, commute, fold):
 
 
 
-
-
-
-
-
 DEBUG = False
 
 
@@ -248,7 +328,6 @@ if __name__ == "__main__":
     prog = json.load(sys.stdin)
     for func in prog['functions']:
         lvn(func, prop=prop, commute=commute, fold=fold)
-
 
     # Emit JSON IR
     json.dump(prog, sys.stdout, indent=2)

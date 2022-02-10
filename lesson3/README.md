@@ -15,5 +15,17 @@ turnt *.bril
 ```
 
 ## Local Value Numbering
+`lvn.py` implements local value numbering. It has 3 optional arguments: `-p`, `-c`, `-f`.   
+
+- `-p`: enable constant propagation. 
+- `-c`: enable commutativity. 
+- `-f`: enable constant folding. 
 
 
+
+It would pass the test cases under `lvn/test/`. But it would fail on the test cases under `lvn/test_nonlocal/`. To succesfully optimize the nonlocal programs, I think control flow graph is required. 
+
+```
+cd lvn/test
+turnt *.bril
+```
