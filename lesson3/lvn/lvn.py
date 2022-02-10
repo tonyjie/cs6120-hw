@@ -30,15 +30,31 @@ def fresh(seed, names):
             return name
         i += 1
 
-def value_equal(val0: Value, val1: Value) -> bool:
+
+def value_equal(val0: Value, val1: Value, commute: bool) -> bool:
     '''Check if two Value object is equal. Might consider commutativity, etc. 
     '''
-    if val0 == val1:
-        return True
-    else:
-        return False
 
-def find(table, val, prop):
+    def commute_equal_args(args0, args1):
+        '''Check if two args are equal, considering commutativity. 
+        '''
+        if (args0[0] == args1[0] and args0[1] == args1[1]) or (args0[0] == args1[1] and args0[1] == args1[0]):
+            return True
+        else:
+            return False
+
+    # Check Commutativity
+    if commute:
+        if (val0.op == val1.op) and (val0.op in ['add', 'mul']): # only these two op have commutativity
+            return commute_equal_args(val0.args, val1.args)
+
+    else:
+        if val0 == val1:
+            return True
+        else:
+            return False
+
+def find(table, val, prop, commute):
     '''find the *num* and *var* in the table if exists, according to the *val*
     '''
 
@@ -54,7 +70,7 @@ def find(table, val, prop):
     if val.op != 'const': # we don't search for CONST op. We just directly put the const value into the table. 
         for i, element in enumerate(table): # element is a tuple. element[0]: a Value object; element[1]: Variable (canonical)            
             # if element[0] == val: # TODO: change the '==' into an "Equal function"     
-            if value_equal(element[0], val):
+            if value_equal(element[0], val, commute):
                 found = True
                 # found (num, var) according to the value in the table
                 var = element[1]
@@ -122,11 +138,11 @@ def change_overwritten_name(block):
 def lvn(func, prop, commute, fold):
     blocks = list(form_blocks(func['instrs']))
     for block in blocks:
-        lvn_block(block, prop)
+        lvn_block(block, prop, commute, fold)
     func['instr'] = flatten(blocks)
 
 
-def lvn_block(block, prop=False):
+def lvn_block(block, prop, commute, fold):
     # a List that is indexed by the *NUMBER*. The value is Tuple = (*VALUE*, *Variable*). *VALUE* is a namedtuple, containing *op*, *args*, *value*
     table = list()
     # Key: current number index of every defined variable. Value: number in the Table. Different variables can have the same number in the Table. 
@@ -155,7 +171,7 @@ def lvn_block(block, prop=False):
                 val.args[i] = var2num.get(arg, None) # TODO: is there the case that we can't find the args in var2num?
 
             # find the *num* and *var* in the table if exists, according to the *val*
-            found, (num, var) = find(table, val, prop)
+            found, (num, var) = find(table, val, prop, commute)
 
             if DEBUG:
                 print(f'found: {found}, num: {num}, var: {var}')
