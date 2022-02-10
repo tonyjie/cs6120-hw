@@ -197,7 +197,7 @@ def lvn(func, prop, commute, fold):
     blocks = list(form_blocks(func['instrs']))
     for block in blocks:
         lvn_block(block, func_args, prop, commute, fold)
-    func['instr'] = flatten(blocks)
+    func['instrs'] = flatten(blocks)
 
 
 def lvn_block(block, func_args, prop, commute, fold):
