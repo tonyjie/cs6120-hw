@@ -202,7 +202,6 @@ def run_df(func, analysis):
     transfer_func = analysis[0]
     worklist_algo = analysis[1]
 
-
     blocks = list(form_blocks(func['instrs']))
     
     # get block name for each block
