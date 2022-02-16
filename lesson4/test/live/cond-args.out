@@ -1,4 +1,4 @@
-b1:
+block.0:
   in:  cond
   out: a
 left:
