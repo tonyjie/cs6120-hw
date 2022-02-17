@@ -1,7 +1,16 @@
 import sys
 import json
 from typing import Tuple, Callable
+from collections import namedtuple
 from utils import form_blocks, fresh
+
+# A single dataflow analysis consists of these part:
+# - forward: True for forward, False for backward.
+# - init: An initial value (bottom or top of the latice).
+# - merge: Take a list of values and produce a single value.
+# - transfer: The transfer function.
+Analysis = namedtuple('Analysis', ['forward', 'init', 'merge', 'transfer'])
+
 
 def get_block_name(blocks: list) -> dict:
     '''
@@ -96,17 +105,80 @@ def live_func(block: list, Out: set) -> set:
             In.update(args)
 
     return In
-    
+
+def cprop_func(block: list, In: dict) -> dict:
+    '''
+    Forward Transfer function: Constant propagation. 
+    Which variables have statically knowable constant values?
+    In: dict. Key: variable name (dest); Value: value. 
+    '''
+    Out = In.copy()
+
+    for instr in block:
+        if 'dest' in instr:
+            if instr.get('op', None) == 'const': # const op
+                Out[instr['dest']] = instr['value']
+            else: # Arithmetic / Logic / Comparison op
+                Out[instr['dest']] = '?'
+
+    return Out
+
+
+
+def cprop_merge(dicts):
+    '''
+    Merge function for *cprop* (Constant Propagation)
+    For the same var, if value is the same -> keep it; if value is different -> value = ?
+    '''
+    out = dict()
+    for d in dicts:
+        for var, value in d.items():
+            if var in out: # same var
+                if value == out[var]: # value is the same
+                    out[var] = value
+                else:
+                    out[var] = '?' # value is different
+            else: # new var
+                out[var] = value
+
+    return out
+
+
+def union(sets):
+    '''
+    Merge function for *defined* and *live*
+    '''
+    out = set()
+    for s in sets:
+        out.update(s)
+    return out
 
 def print_df(In: dict, Out: dict):
     '''
     Print the result of Dataflow Analysis based on certain format. 
+    in_var, out_var could be *set* or *dict*
     '''
+
+
     for block_label in In.keys():
         in_var = In[block_label]
         out_var = Out[block_label]
-        in_var = ', '.join(sorted(in_var)) if (len(in_var) != 0) else '∅'
-        out_var = ', '.join(sorted(out_var)) if (len(out_var) != 0) else '∅'
+
+        if isinstance(in_var, set):
+            in_var = ', '.join(sorted(in_var)) if (len(in_var) != 0) else '∅'
+            out_var = ', '.join(sorted(out_var)) if (len(out_var) != 0) else '∅'
+        elif isinstance(in_var, dict):
+            if (len(in_var) != 0):
+                in_var = ', '.join('{}: {}'.format(k, v)
+                                            for k,v in sorted(in_var.items()))
+            else:
+                in_var = '∅'
+            
+            if (len(out_var) != 0):
+                out_var = ', '.join('{}: {}'.format(k, v)
+                                        for k,v in sorted(out_var.items()))
+            else:
+                out_var = '∅'
 
         print(f"{block_label}:")
         # print(f"  in:  {', '.join(sorted(in_var))}")
@@ -115,7 +187,7 @@ def print_df(In: dict, Out: dict):
         print(f"  out: {out_var}")
 
 
-def forward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list, In: dict, Out: dict, transfer: Callable) -> Tuple[dict, dict]:
+def forward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list, In: dict, Out: dict, transfer: Callable, merge: Callable) -> Tuple[dict, dict]:
     '''
     Worklist algorithms with forward propagation. 
     Args: worklist, cfg, block_labels, blocks, In, Out
@@ -126,10 +198,8 @@ def forward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list,
 
         if DEBUG:
             print(f"Curr label: {curr_label}")
-        for pred_label in find_predecessor(cfg, curr_label):
-            if DEBUG:
-                print(f"Pred: {pred_label}, Out[p]: {Out[pred_label]}")
-            In[curr_label] = In[curr_label].union(Out[pred_label]) # merge function: Union
+        
+        In[curr_label] = merge(Out[pred_label] for pred_label in find_predecessor(cfg, curr_label)) # merge function
             
         block_index = list(block_labels.keys())[list(block_labels.values()).index(curr_label)] # find key by value in dict (block_labels)
         curr_block = blocks[block_index]
@@ -151,7 +221,7 @@ def forward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list,
     return In, Out
 
 
-def backward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list, In: dict, Out: dict, transfer: Callable) -> Tuple[dict, dict]:
+def backward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list, In: dict, Out: dict, transfer: Callable, merge: Callable) -> Tuple[dict, dict]:
     '''
     Worklist algorithms with backward propagation. 
     Args: worklist, cfg, block_labels, blocks, In, Out
@@ -162,8 +232,8 @@ def backward_worklist(worklist: set, cfg: dict, block_labels: dict, blocks: list
 
         if DEBUG:
             print(f"Curr label: {curr_label}")
-        for succ_label in cfg[curr_label]:
-            Out[curr_label] = Out[curr_label].union(In[succ_label]) # merge function: Union
+
+        Out[curr_label] = merge(In[succ_label] for succ_label in cfg[curr_label]) # merge function
 
 
         block_index = list(block_labels.keys())[list(block_labels.values()).index(curr_label)] # find key by value in dict (block_labels)
@@ -199,8 +269,11 @@ def run_df(func, analysis):
         worklist: Set. Elements are Labels of *blocks*. 
         cfg: dict. Key: label; Value: list of labels. 
     '''
-    transfer_func = analysis[0]
-    worklist_algo = analysis[1]
+
+    if analysis.forward:
+        worklist_algo = forward_worklist
+    else:
+        worklist_algo = backward_worklist
 
     blocks = list(form_blocks(func['instrs']))
     
@@ -217,20 +290,22 @@ def run_df(func, analysis):
     Out = dict()
 
     for labels in block_labels.values():
-        In[labels] = set()
-        Out[labels] = set()
+        In[labels] = analysis.init
+        Out[labels] = analysis.init
     
     # worklist algorithm
-    In, Out = worklist_algo(worklist, cfg, block_labels, blocks, In, Out, transfer_func)
+    In, Out = worklist_algo(worklist, cfg, block_labels, blocks, In, Out, analysis.transfer, analysis.merge)
 
     print_df(In, Out)
             
 
 DEBUG = False
 
+
 ANALYSIS = {
-    'defined': (defined_func, forward_worklist),
-    'live': (live_func, backward_worklist)
+    'defined': Analysis(True, init=set(), merge=union, transfer=defined_func),
+    'live': Analysis(False, init=set(), merge=union, transfer=live_func),
+    'cprop': Analysis(True, init=dict(), merge=cprop_merge, transfer=cprop_func)
 }
 
 if __name__ == "__main__":
