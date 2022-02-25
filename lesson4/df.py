@@ -12,7 +12,7 @@ from utils import form_blocks, fresh
 Analysis = namedtuple('Analysis', ['forward', 'init', 'merge', 'transfer'])
 
 
-def get_block_name(blocks: list) -> dict:
+def get_block_labels(blocks: list) -> dict:
     '''
     Get the label names for each block. 
     Return: dict. Key: index of original block list; Value: label for each block. 
@@ -278,7 +278,7 @@ def run_df(func, analysis):
     blocks = list(form_blocks(func['instrs']))
     
     # get block name for each block
-    block_labels = get_block_name(blocks)
+    block_labels = get_block_labels(blocks)
 
     cfg = get_cfg(blocks, block_labels)
 
