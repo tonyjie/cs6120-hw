@@ -1,4 +1,48 @@
-from utils import fresh
+from utils import fresh, flatten
+
+def add_entry(blocks):
+    """Ensure that a CFG has a unique entry block with no predecessors.
+
+    If the first block already has no in-edges, do nothing. Otherwise,
+    add a new block before it that has no in-edges but transfers control
+    to the old first block. 
+
+    How to judge whether the first block has in-edges: if it has a label, and the label is used later. 
+    """
+    if 'label' in blocks[0][0]:
+        first_label = blocks[0][0]['label']
+        # print(f"first_label: {first_label}")
+    else:
+        # return blocks
+        return
+    
+    found = False
+    for instr in flatten(blocks):
+        if 'labels' in instr and first_label in instr['labels']: # find in-edges to the first block. 
+            found = True
+            print(f"instr: {instr}")
+            break
+    
+    if found: # insert an entry block at the beginning: including an entry label, and a jmp instruction to the first block
+        new_block = [{"label": "entry.insert"}, {"labels": [first_label], "op": "jmp"}]
+        blocks.insert(0, new_block) # insert at the beginning
+        
+    return
+
+
+    # first_lbl = next(iter(blocks.keys()))
+
+    # # Check for any references to the label.
+    # for instr in flatten(blocks.values()):
+    #     if 'labels' in instr and first_lbl in instr['labels']:
+    #         break
+    # else:
+    #     return
+
+    # # References exist; insert a new block.
+    # new_lbl = fresh('entry', blocks)
+    # blocks[new_lbl] = []
+    # blocks.move_to_end(new_lbl, last=False)
 
 def get_block_labels(blocks: list) -> dict:
     '''

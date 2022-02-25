@@ -1,4 +1,4 @@
-# ARGS: front
+# ARGS: -frontier
 @main {
 .entry:
   x: int = const 0;

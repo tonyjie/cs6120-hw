@@ -1,19 +1,7 @@
-{
-  "entry1": [
-    "entry1"
-  ],
-  "while.body": [
-    "entry1",
-    "while.body",
-    "while.cond"
-  ],
-  "while.cond": [
-    "entry1",
-    "while.cond"
-  ],
-  "while.finish": [
-    "entry1",
-    "while.cond",
-    "while.finish"
-  ]
-}
+instr: {'labels': ['while.cond'], 'op': 'jmp'}
+Dom: {'entry.insert': {'entry.insert'}, 'while.cond': {'while.cond', 'entry.insert'}, 'while.body': {'while.body', 'while.cond', 'entry.insert'}, 'while.finish': {'while.finish', 'while.cond', 'entry.insert'}}
+
+Dom Tree: {'entry.insert': ['while.cond'], 'while.cond': ['while.body', 'while.finish'], 'while.body': [], 'while.finish': []}
+
+Dom Frontier: {'entry.insert': [], 'while.cond': [], 'while.body': ['while.cond'], 'while.finish': []}
+

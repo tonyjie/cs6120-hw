@@ -1,0 +1,76 @@
+{
+  "functions": [
+    {
+      "args": [
+        {
+          "name": "a",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "label": "while.cond"
+        },
+        {
+          "dest": "zero",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "args": [
+            "a",
+            "zero"
+          ],
+          "dest": "is_term",
+          "op": "eq",
+          "type": "bool"
+        },
+        {
+          "args": [
+            "is_term"
+          ],
+          "labels": [
+            "while.finish",
+            "while.body"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "while.body"
+        },
+        {
+          "dest": "one",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "args": [
+            "a",
+            "one"
+          ],
+          "dest": "a",
+          "op": "sub",
+          "type": "int"
+        },
+        {
+          "labels": [
+            "while.cond"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "while.finish"
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

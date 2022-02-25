@@ -1,4 +1,4 @@
-# ARGS: dom
+# ARGS: -dom
 @main {
 .entry:
   x: int = const 0;

@@ -1,3 +1,4 @@
+#ARGS: -dom -tree -frontier
 @main(a: int) {
 .while.cond:
   zero: int = const 0;

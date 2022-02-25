@@ -1,16 +1,2 @@
-{
-  "body": [
-    "endif",
-    "then"
-  ],
-  "endif": [],
-  "entry": [
-    "loop"
-  ],
-  "exit": [],
-  "loop": [
-    "body",
-    "exit"
-  ],
-  "then": []
-}
+Dom Tree: {'entry': ['loop'], 'loop': ['body', 'exit'], 'body': ['then', 'endif'], 'then': [], 'endif': [], 'exit': []}
+
