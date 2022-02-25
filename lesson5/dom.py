@@ -1,3 +1,4 @@
+from distutils.log import error
 import json
 import sys
 
@@ -142,6 +143,63 @@ def dom_analysis(func, modes):
         print(f"Dom Tree: {dom_tree}\n")
     if '-frontier' in modes: # Compute the dominance frontier
         print(f"Dom Frontier: {df}\n")
+
+    # Test Dominance using DFS
+    
+    # create incorrect dominators intentionally
+    # dom['endif'].add('then')
+    # dom['endif'].add('exit')
+    # dom['body'].add('then')
+
+    err_record = test_dominance('entry', dom, cfg_succ)
+    for block_label, err_doms in err_record.items():
+        if len(err_doms) > 0:
+            err_doms_str = ",".join(err_doms)
+            print(f"{err_doms_str} is not the Dominator of {block_label}")
+
+
+def test_dominance(entry: str, dom: dict, cfg_succ: dict) -> dict:
+    '''
+    Use DFS to test the correctness of dominance~. 
+
+    Arguments:
+        entry: the ENTRY label
+        dom: dict. 
+        cfg_succ: dict. ~
+    
+    Return: 
+        error_record: dict. Key: block_label; Value: set of incorrect dominators. 
+    '''
+    error_record = {block_label: set() for block_label in dom.keys()}
+
+    for block_label in dom.keys(): # block_label is the node which is dominated by dom[block_label]
+        paths = [] # start = entry, dest = block_label. paths record the path from start to dest. 
+        dest = block_label
+
+        def DFS(node, visited, path):
+            nonlocal paths
+            visited.append(node)
+            path.append(node)
+            if node == dest:
+                paths.append(path.copy()) # if we reach dest, record this path in paths. 
+            for succ in cfg_succ[node]:
+                if succ not in visited:
+                    
+                    DFS(succ, visited, path)
+            path.pop()
+            visited.pop()
+
+        DFS(entry, [], [])
+        # print(f"dom_name: {block_label}; paths: {paths}\n")
+
+        # If A dominates B, then every path from ENTRY to B should include A. 
+        for dominator in dom[block_label]:
+            for path in paths:
+                if dominator not in path:
+                    error_record[block_label].add(dominator)
+                    # raise RuntimeError(f"Error! {dominator} is not the Dominator of {block_label}")
+
+    return error_record
 
 
 if __name__ == "__main__":
