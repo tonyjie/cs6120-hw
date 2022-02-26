@@ -30,20 +30,6 @@ def add_entry(blocks):
     return
 
 
-    # first_lbl = next(iter(blocks.keys()))
-
-    # # Check for any references to the label.
-    # for instr in flatten(blocks.values()):
-    #     if 'labels' in instr and first_lbl in instr['labels']:
-    #         break
-    # else:
-    #     return
-
-    # # References exist; insert a new block.
-    # new_lbl = fresh('entry', blocks)
-    # blocks[new_lbl] = []
-    # blocks.move_to_end(new_lbl, last=False)
-
 def get_block_labels(blocks: list) -> dict:
     '''
     Get the label names for each block. 
