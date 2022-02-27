@@ -1,9 +1,9 @@
-from distutils.log import error
 import json
 import sys
+import copy
 
 from utils import form_blocks
-from cfg import get_block_labels, get_succ, get_pred, add_entry
+from cfg import block_map, get_succ, get_pred, add_entry
 
 def intersect(sets: list) -> set:
     '''
@@ -52,10 +52,37 @@ def get_dom_tree(dom: dict, cfg_pred: dict) -> dict:
     
     return dom_tree
 
+# def get_dom_frontier(dom: dict, cfg_succ: dict) -> dict:
+#     '''
+#     A's domination frontier contains B if A does not dominate B, but A dominates a predecessor of B. 
+#     Equal to: A's domination frontier contains C, if A dominates B, and A does not dominate C (the successor of B)
+
+#     Arguments:
+#         dom: dict. Key: block label; Value: *set* of block labels.
+#         cfg_succ: dict. Key: block label; Value: *list* of block labels. 
+#     Return:
+#         df: dict. Key: block label; Value: *list* of block labels. 
+#     '''
+#     df = dict()
+#     # initialization: empty list
+#     for block_label in dom.keys():
+#         df[block_label] = list()
+    
+#     for block_label, dom_labels in dom.items(): # block_label: B
+#         succ_list = cfg_succ[block_label]
+#         for dom_label in dom_labels: # dom_label: A
+#             for succ in succ_list:
+#                 if dom_label not in dom[succ]: # dom[succ] is the dominators of succ (C). If A is not the dominator of C
+#                     df[dom_label].append(succ)
+
+#     return df
+
 def get_dom_frontier(dom: dict, cfg_succ: dict) -> dict:
     '''
-    A's domination frontier contains B if A does not dominate B, but A dominates a predecessor of B. 
-    Equal to: A's domination frontier contains C, if A dominates B, and A does not dominate C (the successor of B)
+    A's domination frontier contains B if A does not *strictly dominate* B, but A *dominates* a predecessor of B. 
+    (Note that here: one is *strict dominate*, anotehr is *dominate*)
+
+    Equal to: A's domination frontier contains C, if A *dominates* B, and A does not *strictly dominate* C (the successor of B)
 
     Arguments:
         dom: dict. Key: block label; Value: *set* of block labels.
@@ -63,6 +90,11 @@ def get_dom_frontier(dom: dict, cfg_succ: dict) -> dict:
     Return:
         df: dict. Key: block label; Value: *list* of block labels. 
     '''
+    # generate a strict_dom dict
+    strict_dom = copy.deepcopy(dom)
+    for block_label, dom_labels in strict_dom.items():
+        strict_dom[block_label].remove(block_label)
+
     df = dict()
     # initialization: empty list
     for block_label in dom.keys():
@@ -72,10 +104,13 @@ def get_dom_frontier(dom: dict, cfg_succ: dict) -> dict:
         succ_list = cfg_succ[block_label]
         for dom_label in dom_labels: # dom_label: A
             for succ in succ_list:
-                if dom_label not in dom[succ]: # dom[succ] is the dominators of succ (C). If A is not the dominator of C
+                # print(f"A: {dom_label}, B: {block_label}, C: {succ}")
+                if dom_label not in strict_dom[succ]: # dom[succ] is the strict dominators of succ (C). If A is not the strict dominator of C
                     df[dom_label].append(succ)
+                    # print(f"YES! A: {dom_label}, C: {succ}")
 
     return df
+
 
 def find_dom(cfg_pred: dict) -> dict:
     '''
@@ -110,6 +145,11 @@ def find_dom(cfg_pred: dict) -> dict:
  
     return dom
 
+def print_result(d: dict, title: str):
+    print(f"{title}:")
+    for name, dom_names in d.items():
+        print(f"  {name}: {', '.join(sorted(dom_names))}")
+    print()
 
 def dom_analysis(func, modes):
     '''
@@ -119,14 +159,15 @@ def dom_analysis(func, modes):
         if mode not in ['-dom', '-tree', '-frontier']:
             raise ValueError(f"Invalid Argument: {mode}")
 
+    func_args = func.get('args', None)
 
-    blocks = list(form_blocks(func['instrs']))
+    blocks = block_map(list(form_blocks(func['instrs'])))
     # Ensure that a CFG has a unique entry block with no predecessor
     add_entry(blocks)
+    # add terminators? Maybe some bugs are due to this. Currently I don't add terminators manually. 
 
-    block_labels = get_block_labels(blocks)
-    cfg_succ = get_succ(blocks, block_labels)
-    cfg_pred = get_pred(blocks, block_labels)
+    cfg_succ = get_succ(blocks)
+    cfg_pred = get_pred(blocks)
 
     # print(f"Succ: {cfg_succ}")
     # print(f"Pred: {cfg_pred}")
@@ -138,11 +179,11 @@ def dom_analysis(func, modes):
     df = get_dom_frontier(dom, cfg_succ)
 
     if '-dom' in modes: # Find Dominators for a function
-        print(f"Dom: {dom}\n")
+        print_result(dom, 'Dom')
     if '-tree' in modes: # Construct the dominance tree
-        print(f"Dom Tree: {dom_tree}\n")
+        print_result(dom_tree, 'Dom Tree')
     if '-frontier' in modes: # Compute the dominance frontier
-        print(f"Dom Frontier: {df}\n")
+        print_result(df, 'Dom Frontier')
 
     # Test Dominance using DFS
     
@@ -151,7 +192,8 @@ def dom_analysis(func, modes):
     # dom['endif'].add('exit')
     # dom['body'].add('then')
 
-    err_record = test_dominance('entry', dom, cfg_succ)
+    entry_label = next(iter(blocks.keys()))
+    err_record = test_dominance(entry_label, dom, cfg_succ)
     for block_label, err_doms in err_record.items():
         if len(err_doms) > 0:
             err_doms_str = ",".join(err_doms)

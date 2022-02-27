@@ -1,2 +1,2 @@
-Dom Frontier: {'entry': [], 'loop': [], 'body': ['loop'], 'then': ['endif'], 'endif': ['loop'], 'exit': []}
+Dom Frontier: {'entry': [], 'loop': ['loop'], 'body': ['loop'], 'then': ['endif'], 'endif': ['loop'], 'exit': []}
 
