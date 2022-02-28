@@ -1,2 +1,8 @@
-Dom Tree: {'entry': ['loop'], 'loop': ['body', 'exit'], 'body': ['then', 'endif'], 'then': [], 'endif': [], 'exit': []}
+Dom Tree:
+  entry: loop
+  loop: body, exit
+  body: endif, then
+  then: 
+  endif: 
+  exit: 
 

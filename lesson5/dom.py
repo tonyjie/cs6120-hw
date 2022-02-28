@@ -26,11 +26,11 @@ def intersect(sets: list) -> set:
     return out
         
 
-def get_dom_tree(dom: dict, cfg_pred: dict) -> dict:
+def get_dom_tree(dom: dict) -> dict:
     '''
     Get the Dominator Tree given the dom dict, return a dict called `dom_tree`.
-    If A is predecessor of B, and A is also dominator of B, then node A immediately dominates B. 
-    We compute the intersection of `dom` and `cfg_pred` to get the immediate dominator -> form the dominator tree. 
+
+    A immediately dominates B iff A strictly dominates B, but A does not strictly dominate any other node that strictly dominates B. 
 
     Arguments:
         dom: dict. Key: block label; Value: *set* of block labels.
@@ -42,14 +42,21 @@ def get_dom_tree(dom: dict, cfg_pred: dict) -> dict:
     # initialization: empty list
     for block_label in dom.keys():
         dom_tree[block_label] = list()
-    
-    for block_label, dom_labels in dom.items():
-        pred_set = set(cfg_pred[block_label])
-        imm_doms = pred_set.intersection(dom_labels) # imm_doms: set containing the immediate dominators of block_labels. 
-        # print(f"block_label: {block_label}, imm_doms: {imm_doms}")
-        for imm_dom in imm_doms:
-            dom_tree[imm_dom].append(block_label) # A is immediate dominator of B -> A is the parent node of B in Dominator Tree. 
-    
+
+    # generate a strict_dom dict
+    strict_dom = copy.deepcopy(dom)
+    for block_label, dom_labels in strict_dom.items():
+        strict_dom[block_label].remove(block_label)
+
+    for block_label, dom_labels in strict_dom.items(): # B: block_label
+        for dom_label in dom_labels: # A: dom_label
+            result = True
+            for strict_dom_label in strict_dom[block_label]: # node that strictly dominates B
+                if dom_label in strict_dom[strict_dom_label]: # A dominate one node that strictly dominates B, then A does not imm dominates B. 
+                    result = False
+            if result:
+                dom_tree[dom_label].append(block_label)
+
     return dom_tree
 
 # def get_dom_frontier(dom: dict, cfg_succ: dict) -> dict:
@@ -174,7 +181,7 @@ def dom_analysis(func, modes):
 
     dom = find_dom(cfg_pred)
 
-    dom_tree = get_dom_tree(dom, cfg_pred)
+    dom_tree = get_dom_tree(dom)
 
     df = get_dom_frontier(dom, cfg_succ)
 

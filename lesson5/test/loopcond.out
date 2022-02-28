@@ -1,2 +1,8 @@
-Dom: {'entry': {'entry'}, 'loop': {'loop', 'entry'}, 'body': {'loop', 'entry', 'body'}, 'then': {'loop', 'entry', 'body', 'then'}, 'endif': {'loop', 'endif', 'entry', 'body'}, 'exit': {'loop', 'exit', 'entry'}}
+Dom:
+  entry: entry
+  loop: entry, loop
+  body: body, entry, loop
+  then: body, entry, loop, then
+  endif: body, endif, entry, loop
+  exit: entry, exit, loop
 
