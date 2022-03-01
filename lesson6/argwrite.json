@@ -1,0 +1,49 @@
+{
+  "functions": [
+    {
+      "args": [
+        {
+          "name": "a",
+          "type": "int"
+        }
+      ],
+      "instrs": [
+        {
+          "dest": "cond",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "here",
+            "there"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "here"
+        },
+        {
+          "dest": "a",
+          "op": "const",
+          "type": "int",
+          "value": 5
+        },
+        {
+          "label": "there"
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "functions": [
+    {
+      "instrs": [
+        {
+          "label": "b1"
+        },
+        {
+          "dest": "n.0",
+          "op": "const",
+          "type": "int",
+          "value": 5
+        },
+        {
+          "args": [
+            "n.0"
+          ],
+          "op": "ret"
+        }
+      ],
+      "name": "func",
+      "type": "int"
+    },
+    {
+      "args": [
+        {
+          "name": "infinite",
+          "type": "bool"
+        },
+        {
+          "name": "print",
+          "type": "bool"
+        }
+      ],
+      "instrs": [
+        {
+          "label": "entry"
+        },
+        {
+          "labels": [
+            "loop.header"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "loop.header"
+        },
+        {
+          "args": [
+            "__undefined",
+            "v.1"
+          ],
+          "dest": "v.0",
+          "labels": [
+            "entry",
+            "loop.next"
+          ],
+          "op": "phi",
+          "type": "int"
+        },
+        {
+          "args": [
+            "infinite"
+          ],
+          "labels": [
+            "loop.body",
+            "loop.end"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "loop.body"
+        },
+        {
+          "args": [
+            "print"
+          ],
+          "labels": [
+            "loop.print",
+            "loop.next"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "loop.print"
+        },
+        {
+          "dest": "v.2",
+          "funcs": [
+            "func"
+          ],
+          "op": "call",
+          "type": "int"
+        },
+        {
+          "args": [
+            "v.2"
+          ],
+          "op": "print"
+        },
+        {
+          "labels": [
+            "loop.next"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "loop.next"
+        },
+        {
+          "args": [
+            "v.0",
+            "v.2"
+          ],
+          "dest": "v.1",
+          "labels": [
+            "loop.body",
+            "loop.print"
+          ],
+          "op": "phi",
+          "type": "int"
+        },
+        {
+          "labels": [
+            "loop.header"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "loop.end"
+        },
+        {
+          "op": "ret"
+        }
+      ],
+      "name": "loop"
+    },
+    {
+      "instrs": [
+        {
+          "label": "b1"
+        },
+        {
+          "dest": "infinite.0",
+          "op": "const",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "dest": "print.0",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "infinite.0",
+            "print.0"
+          ],
+          "funcs": [
+            "loop"
+          ],
+          "op": "call"
+        },
+        {
+          "op": "ret"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

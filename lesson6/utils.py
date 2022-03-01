@@ -12,8 +12,9 @@ def fresh(seed, names):
     '''
     i = 0
     while True:
-        name = seed + str(i)
+        name = seed + '.' + str(i)
         if name not in names:
+            names.append(name)
             return name
         i += 1
 

@@ -1,0 +1,122 @@
+{
+  "functions": [
+    {
+      "instrs": [
+        {
+          "dest": "n",
+          "op": "const",
+          "type": "int",
+          "value": 5
+        },
+        {
+          "args": [
+            "n"
+          ],
+          "op": "ret"
+        }
+      ],
+      "name": "func",
+      "type": "int"
+    },
+    {
+      "args": [
+        {
+          "name": "infinite",
+          "type": "bool"
+        },
+        {
+          "name": "print",
+          "type": "bool"
+        }
+      ],
+      "instrs": [
+        {
+          "label": "entry"
+        },
+        {
+          "label": "loop.header"
+        },
+        {
+          "args": [
+            "infinite"
+          ],
+          "labels": [
+            "loop.body",
+            "loop.end"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "loop.body"
+        },
+        {
+          "args": [
+            "print"
+          ],
+          "labels": [
+            "loop.print",
+            "loop.next"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "loop.print"
+        },
+        {
+          "dest": "v",
+          "funcs": [
+            "func"
+          ],
+          "op": "call",
+          "type": "int"
+        },
+        {
+          "args": [
+            "v"
+          ],
+          "op": "print"
+        },
+        {
+          "label": "loop.next"
+        },
+        {
+          "labels": [
+            "loop.header"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "loop.end"
+        }
+      ],
+      "name": "loop"
+    },
+    {
+      "instrs": [
+        {
+          "dest": "infinite",
+          "op": "const",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "dest": "print",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "infinite",
+            "print"
+          ],
+          "funcs": [
+            "loop"
+          ],
+          "op": "call"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

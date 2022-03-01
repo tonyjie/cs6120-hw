@@ -23,8 +23,11 @@ def block_map(blocks: list) -> OrderedDict:
         # Generate a name for the block.
         name = block[0].get('label', None)
         if name is None:
-            name = fresh('block.', label_names)
-            label_names.append(name)
+            name = fresh('block', label_names)
+            # directly add the label instr into the blocks
+            label_instr = {"label": name}
+            block.insert(0, label_instr)
+
         # Add the block to the mapping.
         by_name[name] = block
 
