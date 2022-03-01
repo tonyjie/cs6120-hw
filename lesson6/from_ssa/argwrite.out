@@ -1,0 +1,15 @@
+@main(a: int) {
+.entry1:
+  jmp .b1;
+.b1:
+  cond.0: bool = const true;
+  a.1: int = id a;
+  br cond.0 .here .there;
+.here:
+  a.0: int = const 5;
+  a.1: int = id a.0;
+  jmp .there;
+.there:
+  print a.1;
+  ret;
+}

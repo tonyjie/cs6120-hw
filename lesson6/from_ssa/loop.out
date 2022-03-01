@@ -1,0 +1,23 @@
+@main {
+.entry1:
+  jmp .entry;
+.entry:
+  i.0: int = const 1;
+  max.0: int = id __undefined;
+  i.1: int = id i.0;
+  cond.0: bool = id __undefined;
+  jmp .loop;
+.loop:
+  max.1: int = const 10;
+  cond.1: bool = lt i.1 max.1;
+  br cond.1 .body .exit;
+.body:
+  i.2: int = add i.1 i.1;
+  max.0: int = id max.1;
+  i.1: int = id i.2;
+  cond.0: bool = id cond.1;
+  jmp .loop;
+.exit:
+  print i.1;
+  ret;
+}

@@ -1,0 +1,18 @@
+@main {
+.b1:
+  cond.0: bool = const true;
+  br cond.0 .true .false;
+.true:
+  a.0: int = const 0;
+  b.1: int = id __undefined;
+  a.1: int = id a.0;
+  jmp .zexit;
+.false:
+  b.0: int = const 1;
+  b.1: int = id b.0;
+  a.1: int = id __undefined;
+  jmp .zexit;
+.zexit:
+  print a.1;
+  ret;
+}

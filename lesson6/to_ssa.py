@@ -3,7 +3,7 @@ import json
 import sys
 
 from utils import form_blocks, flatten, fresh
-from cfg import block_map, add_entry, get_succ, get_pred
+from cfg import block_map, add_entry, add_terminators, get_succ, get_pred
 from dom import find_dom, get_dom_tree, get_dom_frontier
 
 # def_blocks: list. A list of block names that define this var. e.g. ['entry', 'left', 'right']
@@ -192,6 +192,7 @@ def to_ssa(func):
     blocks = block_map(list(form_blocks(func['instrs'])))
 
     add_entry(blocks)
+    add_terminators(blocks)
     # add terminators? Maybe some bugs are due to this. Currently I don't add terminators manually. 
 
     if DEBUG:

@@ -1,6 +1,9 @@
 from collections import OrderedDict
 from utils import fresh, flatten
 
+# Instructions that terminate a basic block.
+TERMINATORS = 'br', 'jmp', 'ret'
+
 def block_map(blocks: list) -> OrderedDict:
     """Given a sequence of basic blocks, which are lists of instructions,
     produce a `OrderedDict` mapping names to blocks.
@@ -56,6 +59,29 @@ def add_entry(blocks: OrderedDict):
         new_block = [{"label": insert_entry_name}, {"labels": [first_label], "op": "jmp"}]
         blocks[insert_entry_name] = new_block
         blocks.move_to_end(insert_entry_name, last=False) # insert at the beginning
+
+def add_terminators(blocks: OrderedDict):
+    '''
+    Given an ordered block map, modify the blocks to add terminators
+    to all blocks (avoiding "fall-through" control flow transfers).
+    
+    After adding terminators, the last instr in every block is a Terminator instr. 
+    '''
+    for i, block in enumerate(blocks.values()):
+        if not block:
+            if i == len(blocks) - 1:
+                # In the last block, return.
+                block.append({'op': 'ret', 'args': []})
+            else:
+                dest = list(blocks.keys())[i + 1]
+                block.append({'op': 'jmp', 'labels': [dest]})
+        elif block[-1]['op'] not in TERMINATORS:
+            if i == len(blocks) - 1:
+                block.append({'op': 'ret', 'args': []})
+            else:
+                # Otherwise, jump to the next block.
+                dest = list(blocks.keys())[i + 1]
+                block.append({'op': 'jmp', 'labels': [dest]})
 
 
 def get_succ(blocks: OrderedDict) -> dict:
