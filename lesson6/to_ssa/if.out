@@ -3,13 +3,13 @@
   a.0: int = const 47;
   br cond .left .right;
 .left:
-  a.2: int = add a.0 a.0;
+  a.1: int = add a.0 a.0;
   jmp .exit;
 .right:
-  a.3: int = mul a.0 a.0;
+  a.2: int = mul a.0 a.0;
   jmp .exit;
 .exit:
-  a.1: int = phi a.2 a.3 .left .right;
-  print a.1;
+  a.3: int = phi a.1 a.2 .left .right;
+  print a.3;
   ret;
 }

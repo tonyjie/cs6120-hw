@@ -3,14 +3,14 @@
   a.0: int = const 47;
   br cond .left .right;
 .left:
-  a.2: int = add a.0 a.0;
-  a.1: int = id a.2;
+  a.1: int = add a.0 a.0;
+  a.3: int = id a.1;
   jmp .exit;
 .right:
-  a.3: int = mul a.0 a.0;
-  a.1: int = id a.3;
+  a.2: int = mul a.0 a.0;
+  a.3: int = id a.2;
   jmp .exit;
 .exit:
-  print a.1;
+  print a.3;
   ret;
 }

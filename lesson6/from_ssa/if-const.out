@@ -1,5 +1,5 @@
 @main {
-.b1:
+.block.0:
   cond.0: bool = const true;
   br cond.0 .true .false;
 .true:

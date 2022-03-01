@@ -1,10 +1,8 @@
 @main(a: int) {
-.entry2:
-  jmp .entry1;
-.entry1:
-  zero.0: int = id __undefined;
+.entry.insert:
   one.0: int = id __undefined;
   is_term.0: bool = id __undefined;
+  zero.0: int = id __undefined;
   a.0: int = id a;
   jmp .while.cond;
 .while.cond:
@@ -14,9 +12,9 @@
 .while.body:
   one.1: int = const 1;
   a.1: int = sub a.0 one.1;
-  zero.0: int = id zero.1;
   one.0: int = id one.1;
   is_term.0: bool = id is_term.1;
+  zero.0: int = id zero.1;
   a.0: int = id a.1;
   jmp .while.cond;
 .while.finish:

@@ -1,7 +1,5 @@
 @main(a: int) {
-.entry1:
-  jmp .b1;
-.b1:
+.block.0:
   cond.0: bool = const true;
   a.1: int = id a;
   br cond.0 .here .there;
