@@ -40,7 +40,7 @@ turnt *.bril
 ```
 
 ## Bonus: global value numbering for SSA-form Bril code
-
+TODO :)
 
 
 ## Limitations
