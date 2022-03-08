@@ -16,7 +16,7 @@ I also spent a lot of time in the beginning thinking of how to determine the num
 
 
 ## out of SSA transformation
-`from_ssa.py` is the implementatioin that transform SSA-form code into normal bril code without phi-nodes. 
+`from_ssa.py` is the implementation that transform SSA-form code into normal bril code without phi-nodes. 
 
 It can be tested as follows, which is actually running:
 
@@ -44,6 +44,6 @@ TODO :)
 
 
 ## Limitations
-`to_ssa_fail.` dir contains the special testcases that this implementation haven't coevered yet.    
+`to_ssa_fail.` dir contains the special testcases that this implementation haven't covered yet.    
 - `if_ssa.bril` is bril code with phi nodes. Current implementation doesn't support bril program with phi nodes. To support it, I should also give the destination of phi node a fresh new name, and save it in the stack and maintain it. But my implementation is kind of complicated (messy...?), so I just choose to not support it currently XD. Hope it didn't influence a lot. 
 - `loop-branch.bril` contains several functions and `call` op. This need some additional effort to analyze its control flow graph, etc. 
