@@ -1,0 +1,3 @@
+[submodule "lesson7/llvm-pass-skeleton"]
+	path = lesson7/llvm-pass-skeleton
+	url = git@github.com:sampsyo/llvm-pass-skeleton.git
