@@ -20,7 +20,7 @@ namespace {
                     // errs() << "Opcode: " << I.getOpcode() << "\n" << "OpcodeName: " << I.getOpcodeName() << "\n" << I << "\n";
 
                     if (I.getOpcodeName() == std::string("sdiv")) { // integer division
-                        errs() << "Found Integer Division Instrutcion!\t" << "OpcodeName: " << I.getOpcodeName() << "\n" << I << "\n";
+                        errs() << "Found Integer Division Instruction!\t" << "OpcodeName: " << I.getOpcodeName() << "\n" << I << "\n";
                         
                         auto* pI = &I;
 

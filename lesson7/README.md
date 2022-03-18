@@ -16,8 +16,8 @@ cd ..
 
 ### Run it! 
 ```
-clang++ -Xclang -load -Xclang build/DivToMul/libDivToMul.so -flegacy-pass-manager simple.cpp -o simple
-./simple
+clang++ -Xclang -load -Xclang build/DivToMul/libDivToMul.so -flegacy-pass-manager simple.cpp -o simple_trans
+./simple_trans
 ```
 
 When compiling, the Pass would print `OpCodeName` and `Instruction` when it find an **Integer Division instruction**, and print the **Integer Multiplication Instruction** after transformation. 
@@ -41,3 +41,17 @@ res0 = 20; res1 = 16;
 
 
 ## Find a real-ish C/C++ program somewhere and run the pass on it to observe the results. 
+I just wrote another simple program `test.cpp` with a `test_div` function with a if branch. 
+
+The running command is the same. 
+```
+clang++ -Xclang -load -Xclang build/DivToMul/libDivToMul.so -flegacy-pass-manager test.cpp -o test_trans
+```
+This will print the **Integer Division Instruction** and the transformed instruction. 
+
+`./test_trans` will give the multiplication result instead of division result. 
+
+## Discussion
+I was planning to transform the floating division instruction to floating multiplication instruction (`fmul`), but it seems that the `IRBuilder.CreateMul()` cannot generate a `fmul` instruction. The output of two floating points is not as expected. I think this is because that `CreateMul()` still generates a integer multiplication instruction, while its operands are floating points. then something went wrong. 
+
+I tried, but didn't found a function like `CreateFMul()` for `IRBuilder`. 
