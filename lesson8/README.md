@@ -33,7 +33,7 @@ clang simple-mem2reg.ll -Xclang -load -Xclang build/LICM/libLICM.so -flegacy-pas
 
 1. To allow optimization under `-O0`, we need to provide `-Xclang -disable-O0-optnone` option. Otherwise, we cannot apply `-mem2reg` pass later. 
 2. `-mem2reg` pass allows us to have normal SSA-form IR with phi nodes instead of load/store, which prevents us from detecting loop-invariant operands and instructions. 
-3. 
+3. Load our pass. 
 4. Generate the LLVM IR after LICM. Comparing the `simple-licm.ll` with `simple-mem2reg.ll`, it is easy to find that the loop invariant instruction is moved ahead the loop. 
 
 ```
