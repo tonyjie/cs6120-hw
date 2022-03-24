@@ -8,7 +8,7 @@ Therefore, the implementation is just simply go over all the instructions of the
 ## Rigorously evaluate its performance impact.
 If you choose LLVM, select an existing (small!) benchmark suite such as [Embench](https://www.embench.org/).
 
-
+I'm still figuring out how to use `Embench`. It seems that I can't directly use its source code as it doesn't have a `main` function. 
 
 
 ## Commands
