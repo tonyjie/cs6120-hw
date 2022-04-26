@@ -60,7 +60,7 @@ Insert `console.log(">", JSON.stringify(instr));` in the `evalInstr()` function 
 
 So a workaround is that we change the condition of guard instruction based on profiling result (take cond or not): we want the whole trace to be executed. This is not what `guard` is designed to do for sure, but it is implemented here just because we trace the whole program and don't want it to be bad on the loop example. 
 
-### Stitch the race back into the program
+### Stitch the trace back into the program
 As we trace the whole program, we add `speculate` at the beginning, and `commit` at the end of tracing code. Add another `ret` after `commit` so that we can end the tracing program if all the `guard` succeed in the speculate block. 
 
 After that, the original program block is added as the fallback of the `guard`. 
