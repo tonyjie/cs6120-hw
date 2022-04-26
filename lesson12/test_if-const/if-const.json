@@ -1,0 +1,64 @@
+{
+  "functions": [
+    {
+      "instrs": [
+        {
+          "dest": "cond",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "true",
+            "false"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "true"
+        },
+        {
+          "dest": "a",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "labels": [
+            "zexit"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "false"
+        },
+        {
+          "dest": "b",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "labels": [
+            "zexit"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "zexit"
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

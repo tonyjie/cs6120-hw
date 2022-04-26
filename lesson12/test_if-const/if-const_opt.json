@@ -1,0 +1,103 @@
+{
+  "functions": [
+    {
+      "instrs": [
+        {
+          "op": "speculate"
+        },
+        {
+          "dest": "cond",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "op": "guard",
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "main_entry"
+          ]
+        },
+        {
+          "dest": "a",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "op": "ret"
+        },
+        {
+          "label": "main_entry"
+        },
+        {
+          "dest": "cond",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "true",
+            "false"
+          ],
+          "op": "br"
+        },
+        {
+          "label": "true"
+        },
+        {
+          "dest": "a",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "labels": [
+            "zexit"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "false"
+        },
+        {
+          "dest": "b",
+          "op": "const",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "labels": [
+            "zexit"
+          ],
+          "op": "jmp"
+        },
+        {
+          "label": "zexit"
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}

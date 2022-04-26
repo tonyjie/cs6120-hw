@@ -1,0 +1,43 @@
+{
+  "functions": [
+    {
+      "name": "main",
+      "instrs": [
+        {
+          "dest": "cond",
+          "op": "const",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "args": [
+            "cond"
+          ],
+          "labels": [
+            "true",
+            "false"
+          ],
+          "op": "br"
+        },
+        {
+          "dest": "a",
+          "op": "const",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "labels": [
+            "zexit"
+          ],
+          "op": "jmp"
+        },
+        {
+          "args": [
+            "a"
+          ],
+          "op": "print"
+        }
+      ]
+    }
+  ]
+}

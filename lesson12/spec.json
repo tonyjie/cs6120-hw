@@ -1,0 +1,51 @@
+{
+  "functions": [
+    {
+      "instrs": [
+        {
+          "dest": "b",
+          "op": "const",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "dest": "v",
+          "op": "const",
+          "type": "int",
+          "value": 4
+        },
+        {
+          "op": "speculate"
+        },
+        {
+          "dest": "v",
+          "op": "const",
+          "type": "int",
+          "value": 2
+        },
+        {
+          "args": [
+            "b"
+          ],
+          "labels": [
+            "failed"
+          ],
+          "op": "guard"
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "label": "failed"
+        },
+        {
+          "args": [
+            "v"
+          ],
+          "op": "print"
+        }
+      ],
+      "name": "main"
+    }
+  ]
+}
