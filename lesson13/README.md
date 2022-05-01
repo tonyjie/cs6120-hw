@@ -62,7 +62,7 @@ Note that the simplified expression is `BC'D' + B'CD + BC'D`, which is not the m
 
 - Build template expression with holes. 
 
-    This is implemented in [`def get_match_template_expr`](TODO). I list all the possible `and terms` with a `hole variable`, and `or` them together. 
+    This is implemented in [`def get_match_template_expr`](https://github.com/tonyjie/cs6120-hw/blob/08f0ad32b9d090f5251f0ab1b494b9c882beb45d/lesson13/bool_simplify.py#L184). I list all the possible `and terms` with a `hole variable`, and `or` them together. 
 
     E.g. vars includes 3 variables: a, b, c. Template expr would be: 
     ```
@@ -75,7 +75,7 @@ Note that the simplified expression is `BC'D' + B'CD + BC'D`, which is not the m
 
 - Get final simplified boolean expression. 
 
-    This is implemented in [`def get_simplified_expr()`](TODO). Given the values of solved holes, print the simplified boolean expression. 
+    This is implemented in [`def get_simplified_expr()`](https://github.com/tonyjie/cs6120-hw/blob/08f0ad32b9d090f5251f0ab1b494b9c882beb45d/lesson13/bool_simplify.py#L242). Given the values of solved holes, print the simplified boolean expression. 
 
 
 ## Limitation
